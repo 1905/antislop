@@ -1,0 +1,29 @@
+name: ci
+
+on:
+  push:
+    branches: [dev]
+  pull_request:
+    branches: [dev]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22.x"
+          cache: false
+      - name: gofmt
+        run: test -z "$(gofmt -l .)"
+      - name: antislop-rus vet and test
+        working-directory: skills/antislop-rus
+        run: |
+          go vet scripts/antislop.go scripts/antislop_test.go
+          cd scripts && go test -count=1 antislop.go antislop_test.go
+      - name: antislop-eng vet and test
+        working-directory: skills/antislop-eng
+        run: |
+          go vet scripts/check.go scripts/check_test.go
+          cd scripts && go test -count=1 check.go check_test.go

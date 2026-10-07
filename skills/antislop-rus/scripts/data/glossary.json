@@ -1,0 +1,761 @@
+{
+  "source": "The English-Russian review glossary. Edit this file directly.",
+  "files": [
+    {
+      "name": "glossary-en-ru",
+      "preamble": "# glossary-en-ru — code-review vocabulary, English → Russian\n\n**Status:** v2, 2026-10-08. This file is the source of truth; edit it directly.\n\nHow to use a row:\n- Translate the English term with the **Russian (preferred)** word. Use **also OK** only when the preferred word does not fit the sentence.\n- Never use a word from the **never** column. With `--source` set to an English text, `antislop.go` reports a hard `glossary` finding when the source holds the English term and the Russian text holds a never variant.\n- A term with no good Russian word stays in backticks as a name (`` `lease` ``, `` `offset` ``). Do not invent a Russian calque for it.\n- A standard loanword (ревью, коммит, релиз, таймаут, кэш, тест, пайплайн, CI, MR) stays. Do not over-russify it.\n\nColumn syntax:\n- `English term`: patterns in backticks, separated by commas. A plain word matches only itself. `stem*` matches every word that starts with the stem. Words separated by spaces form a phrase. Case is ignored.\n- `never`: patterns in the `ru-non-approved` syntax (`стем:n`, `стем:v`, `[пре]стем:nv`, phrases). `—` means no never variant.\n- A never variant that is also a `ru-domain` term (учётные «ноги», «узел» = хост) follows the domain rule: in its domain sense it is a soft note, not a hard finding.\n\n| English term | Russian (preferred) | also OK | never | note |\n|---|---|---|---|---|\n",
+      "columns": [
+        "English term",
+        "Russian (preferred)",
+        "also OK",
+        "never",
+        "note"
+      ],
+      "rows": [
+        [
+          "`flaky`, `flakiness`, `flake`, `flakes`, `flaked`, `flaking`",
+          "нестабильный тест; падает через раз",
+          "нестабильность теста",
+          "`флак:nv`, `флейк:nv`, `флап:nv`",
+          "say how often it fails, if the source says it"
+        ],
+        [
+          "`flap`, `flaps`, `flapping`, `flapped`",
+          "чередование отказов и восстановлений",
+          "нестабильность",
+          "`флап:nv`, `флаппинг:n`",
+          "health checks, alerts"
+        ],
+        [
+          "`test`, `tests`",
+          "тест",
+          "проверка",
+          "—",
+          "standard loanword"
+        ],
+        [
+          "`test case`, `test cases`",
+          "сценарий; тест-кейс (TestRail)",
+          "тест",
+          "`кейс:n`",
+          "«тест-кейс» passes, a bare «кейс» fires"
+        ],
+        [
+          "`edge case`, `edge cases`, `corner case`, `corner cases`",
+          "граничный случай",
+          "крайний случай",
+          "`кейс:n`",
+          ""
+        ],
+        [
+          "`use case`, `use cases`",
+          "сценарий использования",
+          "сценарий",
+          "`юзкейс:n`, `кейс:n`",
+          ""
+        ],
+        [
+          "`suite`, `suites`, `test suite`, `test suites`",
+          "набор тестов",
+          "набор",
+          "`сьют:n`, `сюит:n`",
+          ""
+        ],
+        [
+          "`smoke test`, `smoke tests`, `smoke`",
+          "тесты `smoke`",
+          "быстрая базовая проверка",
+          "`смоук:n`, `дымов:n`",
+          "«дымовой тест» is over-russification"
+        ],
+        [
+          "`sanity check`, `sanity checks`",
+          "базовая проверка",
+          "—",
+          "`санити`",
+          ""
+        ],
+        [
+          "`regression`, `regressions`",
+          "регрессия",
+          "—",
+          "—",
+          ""
+        ],
+        [
+          "`unit test`, `unit tests`",
+          "unit-тест",
+          "модульный тест",
+          "`юнит:n`",
+          "`unit-тест` is a listed compound"
+        ],
+        [
+          "`integration test`, `integration tests`",
+          "интеграционный тест",
+          "—",
+          "—",
+          ""
+        ],
+        [
+          "`e2e`, `end-to-end`",
+          "e2e-тест",
+          "сквозной тест",
+          "—",
+          "`e2e-тест` is a listed compound"
+        ],
+        [
+          "`fixture`, `fixtures`",
+          "фикстура",
+          "—",
+          "—",
+          "pytest term"
+        ],
+        [
+          "`mock`, `mocks`, `mocked`, `mocking`",
+          "мок",
+          "заглушка",
+          "`[за]мока:v`",
+          ""
+        ],
+        [
+          "`stub`, `stubs`, `stubbed`",
+          "заглушка",
+          "—",
+          "`стаб:nv`",
+          ""
+        ],
+        [
+          "`assert`, `asserts`, `assertion`, `assertions`",
+          "проверка (`assert`)",
+          "утверждение в тесте",
+          "`ассерт:nv`, `ассершн:n`",
+          ""
+        ],
+        [
+          "`harness`, `test harness`",
+          "тестовая обвязка",
+          "оснастка тестов",
+          "`харнес:n`, `харнесс:n`",
+          ""
+        ],
+        [
+          "`oracle`, `oracles`, `test oracle`",
+          "ожидаемый результат; проверка",
+          "эталон",
+          "`оракул:n`",
+          ""
+        ],
+        [
+          "`hermetic`",
+          "изолированный; без стенда",
+          "—",
+          "`герметичн:n`",
+          ""
+        ],
+        [
+          "`mutant`, `mutants`, `mutation test*`, `mutation testing`",
+          "мутационный тест",
+          "—",
+          "`мутант:n`",
+          "define the term once"
+        ],
+        [
+          "`coverage`",
+          "покрытие",
+          "—",
+          "`каверидж:n`",
+          ""
+        ],
+        [
+          "`skip`, `skips`, `skipped`, `skipping`",
+          "пропустить; пропущен",
+          "—",
+          "`[за,про]скип:nv`",
+          "the status name stays in backticks: `skipped`"
+        ],
+        [
+          "`xfail`",
+          "ожидаемое падение (`xfail`)",
+          "—",
+          "`иксфейл:n`",
+          ""
+        ],
+        [
+          "`gate`, `gates`, `gated`, `gating`",
+          "условие запуска; проверка; порог",
+          "—",
+          "`гейт:n`",
+          ""
+        ],
+        [
+          "`guard`, `guards`, `guarded`",
+          "защитная проверка",
+          "условие",
+          "`гард:n`, `гвард:n`",
+          ""
+        ],
+        [
+          "`retry`, `retries`, `retried`, `retrying`",
+          "повтор; повторная попытка",
+          "повторить",
+          "`ретрай:n`, `ретра:nv`",
+          ""
+        ],
+        [
+          "`backoff`, `exponential backoff`",
+          "пауза между повторами",
+          "экспоненциальная пауза",
+          "`бэкофф:n`, `бэкоф:n`, `бекоф:n`",
+          ""
+        ],
+        [
+          "`throttle`, `throttled`, `throttling`",
+          "ограничение частоты запросов",
+          "ограничить частоту",
+          "`троттл:nv`, `троттлинг:n`",
+          ""
+        ],
+        [
+          "`rate limit`, `rate limits`, `rate limiting`, `rate-limited`",
+          "лимит запросов",
+          "ограничение частоты",
+          "`рейт:n`",
+          ""
+        ],
+        [
+          "`pin`, `pins`, `pinned`, `pinning`",
+          "закрепить; закрепление (версии, окружения)",
+          "—",
+          "`пин:n`, `запинить`, `запинен:n`",
+          ""
+        ],
+        [
+          "`lane`, `lanes`",
+          "тестовый проект; набор тестов",
+          "поток",
+          "`лейн:n`",
+          ""
+        ],
+        [
+          "`leg`, `legs`",
+          "запуск; job CI",
+          "—",
+          "`ног:n`",
+          "accounting legs of a posting: see `ru-domain`"
+        ],
+        [
+          "`job`, `jobs`",
+          "job CI; запуск",
+          "задача CI",
+          "`джоб:n`",
+          ""
+        ],
+        [
+          "`matrix`, `CI matrix`",
+          "матрица CI",
+          "—",
+          "—",
+          "«CI-матрица» fires the `glued` rule"
+        ],
+        [
+          "`pipeline`, `pipelines`",
+          "пайплайн",
+          "пайплайн CI",
+          "`сборочн:n конвейер:n`, `конвейер:n`",
+          "over-russification"
+        ],
+        [
+          "`CI`",
+          "CI",
+          "—",
+          "`сборочн:n конвейер:n`, `непрерывн:n интеграци:n`",
+          "over-russification"
+        ],
+        [
+          "`build`, `builds`",
+          "сборка",
+          "—",
+          "`билд:n`",
+          ""
+        ],
+        [
+          "`nightly`",
+          "ночной прогон",
+          "ночной запуск",
+          "`найтли`",
+          ""
+        ],
+        [
+          "`red`, `failing`",
+          "падает",
+          "красный (в CI)",
+          "`[по]красне:v`",
+          ""
+        ],
+        [
+          "`swallow*`",
+          "скрывает ошибку; игнорирует ошибку",
+          "—",
+          "`глота:v`, `[про]глатыва:v`",
+          ""
+        ],
+        [
+          "`silent`, `silently`",
+          "без записи в лог; без ошибки",
+          "молча",
+          "`[за]молч:v`, `молчалив:n`",
+          "«молча» passes"
+        ],
+        [
+          "`noisy`, `loud`",
+          "много записей в логе",
+          "уровня `Error` или `Warn`",
+          "`громк:n`",
+          ""
+        ],
+        [
+          "`review`, `reviews`",
+          "ревью",
+          "проверка кода",
+          "—",
+          "standard loanword"
+        ],
+        [
+          "`reviewer`, `reviewers`",
+          "убрать; писать сам вывод",
+          "автор ревью",
+          "`ревьюер:n`",
+          "pipeline jargon"
+        ],
+        [
+          "`finding`, `findings`",
+          "замечание",
+          "проблема",
+          "`финдинг:n`",
+          "the Latin word fires the lexicon"
+        ],
+        [
+          "`delta`",
+          "изменения с прошлого ревью",
+          "изменения",
+          "`дельт:n`",
+          "pipeline jargon"
+        ],
+        [
+          "`diff`, `diffs`, `in-diff`",
+          "изменения в MR",
+          "`diff`",
+          "`дифф:n`",
+          ""
+        ],
+        [
+          "`prior`, `previous review`",
+          "прежний; из прошлого ревью",
+          "—",
+          "`приор:n`",
+          "the Latin word fires the lexicon"
+        ],
+        [
+          "`confidence`",
+          "убрать оценку уверенности",
+          "—",
+          "`уверенност:n #`",
+          "pipeline jargon"
+        ],
+        [
+          "`merge`, `merges`, `merged`, `merging`",
+          "слияние; влить",
+          "—",
+          "`[с,за]мерж:nv`, `[с,за]мердж:nv`",
+          ""
+        ],
+        [
+          "`merge request`, `merge requests`",
+          "MR",
+          "—",
+          "—",
+          ""
+        ],
+        [
+          "`rebase`, `rebased`, `rebasing`",
+          "перебазировать",
+          "`rebase`",
+          "`[от]ребейз:nv`",
+          ""
+        ],
+        [
+          "`commit`, `commits`, `committed`",
+          "коммит",
+          "—",
+          "`фиксаци:n`",
+          "over-russification"
+        ],
+        [
+          "`branch`, `branches`",
+          "ветка",
+          "—",
+          "`бранч:n`",
+          ""
+        ],
+        [
+          "`thread`, `threads`",
+          "обсуждение (в MR); поток (выполнения)",
+          "—",
+          "`тред:n`",
+          ""
+        ],
+        [
+          "`issue`, `issues`",
+          "проблема",
+          "замечание; задача",
+          "`ишью`",
+          ""
+        ],
+        [
+          "`fix`, `fixes`, `fixed`",
+          "исправление; исправить",
+          "—",
+          "`фикс:n`, `[по]фикси:v`",
+          "«фиксирует» passes"
+        ],
+        [
+          "`patch`",
+          "исправление",
+          "патч",
+          "—",
+          ""
+        ],
+        [
+          "`release`, `releases`",
+          "релиз",
+          "выпуск",
+          "—",
+          "standard loanword"
+        ],
+        [
+          "`rollout`, `roll out`",
+          "постепенный выпуск",
+          "развёртывание",
+          "`роллаут:n`",
+          ""
+        ],
+        [
+          "`rollback`, `roll back`, `revert`, `reverted`",
+          "откат; откатить",
+          "—",
+          "`роллбэк:n`, `ролбэк:n`, `реверт:nv`",
+          ""
+        ],
+        [
+          "`deploy`, `deploys`, `deployed`, `deployment`",
+          "деплой; развёртывание",
+          "выкладка",
+          "`деплоймент:n`, `[за]деплои:v`",
+          ""
+        ],
+        [
+          "`feature flag`, `feature flags`, `feature toggle`, `toggle`",
+          "флаг функции",
+          "флаг; переключатель",
+          "`фичефлаг:n`, `фич:n`, `тоггл:n`",
+          ""
+        ],
+        [
+          "`breaking change`, `breaking changes`",
+          "несовместимое изменение",
+          "—",
+          "`брейкинг`",
+          ""
+        ],
+        [
+          "`environment`, `env`",
+          "окружение",
+          "контур",
+          "`энв:n`",
+          ""
+        ],
+        [
+          "`staging`",
+          "предрелизный контур",
+          "стенд",
+          "—",
+          ""
+        ],
+        [
+          "`migration`, `migrations`",
+          "миграция",
+          "—",
+          "—",
+          ""
+        ],
+        [
+          "`schema`",
+          "схема",
+          "—",
+          "—",
+          ""
+        ],
+        [
+          "`queue`, `queues`",
+          "очередь",
+          "—",
+          "`кью`",
+          ""
+        ],
+        [
+          "`worker`, `workers`",
+          "воркер",
+          "обработчик",
+          "—",
+          "standard loanword"
+        ],
+        [
+          "`consumer`, `consumers`",
+          "потребитель",
+          "`consumer`",
+          "`консьюмер:n`",
+          ""
+        ],
+        [
+          "`producer`, `producers`",
+          "отправитель",
+          "`producer`",
+          "`продюсер:n`",
+          ""
+        ],
+        [
+          "`offset`, `offsets`",
+          "смещение",
+          "`offset`",
+          "`оффсет:n`",
+          ""
+        ],
+        [
+          "`lease`, `leases`",
+          "`lease`",
+          "аренда",
+          "`лиз:n`",
+          "keep the name in backticks"
+        ],
+        [
+          "`heartbeat`, `heartbeats`",
+          "сигнал активности",
+          "`heartbeat`",
+          "`хартбит:n`",
+          ""
+        ],
+        [
+          "`lock`, `locks`, `locked`",
+          "блокировка",
+          "—",
+          "`лок:n`",
+          ""
+        ],
+        [
+          "`deadlock`, `deadlocks`",
+          "взаимная блокировка",
+          "—",
+          "`дедлок:n`",
+          ""
+        ],
+        [
+          "`race condition`, `race conditions`, `data race`, `race`",
+          "гонка",
+          "состояние гонки",
+          "`кондишн:n`",
+          ""
+        ],
+        [
+          "`idempotent`, `idempotency`",
+          "идемпотентный; идемпотентность",
+          "—",
+          "—",
+          ""
+        ],
+        [
+          "`timeout`, `timeouts`",
+          "таймаут",
+          "—",
+          "—",
+          "standard loanword"
+        ],
+        [
+          "`cache`, `cached`, `caching`",
+          "кэш",
+          "—",
+          "—",
+          "standard loanword"
+        ],
+        [
+          "`handler`, `handlers`",
+          "обработчик",
+          "—",
+          "`хендлер:n`, `хэндлер:n`",
+          ""
+        ],
+        [
+          "`endpoint`, `endpoints`",
+          "эндпоинт",
+          "метод API; путь API",
+          "`ручк:n`",
+          ""
+        ],
+        [
+          "`callback`, `callbacks`",
+          "обратный вызов",
+          "`callback`",
+          "`колбэк:n`, `колбек:n`, `коллбэк:n`",
+          ""
+        ],
+        [
+          "`payload`, `payloads`",
+          "тело запроса",
+          "данные сообщения",
+          "`пейлоад:n`, `пэйлоад:n`",
+          ""
+        ],
+        [
+          "`helper`, `helpers`",
+          "вспомогательная функция",
+          "—",
+          "`хелпер:n`",
+          ""
+        ],
+        [
+          "`wrapper`, `wrappers`",
+          "обёртка",
+          "—",
+          "`враппер:n`",
+          ""
+        ],
+        [
+          "`fallback`, `fallbacks`",
+          "запасной вариант",
+          "ветка `fallback`",
+          "`фолбэк:n`, `фолбек:n`",
+          ""
+        ],
+        [
+          "`default`, `defaults`",
+          "по умолчанию",
+          "—",
+          "`дефолт:n`, `дефолтн:n`",
+          ""
+        ],
+        [
+          "`resolve`, `resolved`, `resolving`, `resolution`",
+          "определение; разрешение",
+          "—",
+          "`резолв:nv`, `резолвинг:n`",
+          ""
+        ],
+        [
+          "`flow`, `flows`",
+          "сценарий",
+          "процесс",
+          "`флоу`",
+          ""
+        ],
+        [
+          "`scope`, `scoped`",
+          "область; охват",
+          "—",
+          "`скоуп:n`",
+          ""
+        ],
+        [
+          "`batch`, `batches`",
+          "пакет",
+          "—",
+          "`батч:n`",
+          ""
+        ],
+        [
+          "`dedup*`",
+          "дедупликация",
+          "—",
+          "`дедуп:n`",
+          ""
+        ],
+        [
+          "`grace period`",
+          "льготный период",
+          "—",
+          "`грейс:n`",
+          ""
+        ],
+        [
+          "`dismiss`, `dismissed`",
+          "закрыть; закрытие",
+          "—",
+          "`дисмисс:n`, `дисмис:v`",
+          ""
+        ],
+        [
+          "`modal`, `modals`",
+          "модальное окно",
+          "—",
+          "`модалк:n`",
+          ""
+        ],
+        [
+          "`kebab menu`, `kebab`",
+          "меню строки (⋮)",
+          "—",
+          "`кебаб:n`",
+          ""
+        ],
+        [
+          "`reader`, `readers`",
+          "модуль чтения",
+          "`reader`",
+          "`ридер:n`",
+          ""
+        ],
+        [
+          "`demote`, `demoted`, `demotion`",
+          "понизить уровень лога",
+          "понижение уровня",
+          "`демот:v`, `демоушен:n`",
+          ""
+        ],
+        [
+          "`drop`, `drops`, `dropped`",
+          "теряет; отбрасывает",
+          "—",
+          "`[за]дроп:v`",
+          ""
+        ],
+        [
+          "`latency`",
+          "задержка",
+          "—",
+          "`латенси`",
+          ""
+        ],
+        [
+          "`snapshot`, `snapshots`",
+          "снимок",
+          "—",
+          "`снепшот:n`",
+          ""
+        ],
+        [
+          "`no-op`, `noop`",
+          "ничего не делает",
+          "—",
+          "`ноуоп`",
+          ""
+        ],
+        [
+          "`copy` (UI text)",
+          "текст кнопки; текст сообщения",
+          "—",
+          "`копирайт:n`",
+          ""
+        ]
+      ],
+      "trailer": ""
+    }
+  ]
+}

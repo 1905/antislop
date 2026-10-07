@@ -1,0 +1,776 @@
+{
+  "source": "The Russian lexicon: banned words, accepted loanwords, domain words. Edit this file directly.",
+  "files": [
+    {
+      "name": "ru-non-approved",
+      "preamble": "# ru-non-approved — words banned in Russian code-review prose\n\n**Status:** v2, 2026-10-08. This file is the source of truth; edit it directly.\n\nTarget style:\n- Ban slang, Cyrillized English, glued Latin+Cyrillic words and pipeline jargon that developers see.\n- Keep standard loanwords (`ru-allowed`). Identifiers, paths, env vars and error strings stay byte-identical in backticks.\n- Domain «ноги» (accounting legs) and «узел» (host, node) are allowed in their literal sense (`ru-domain`).\n\nGlued words (`guard'ом`, `prior-тред`, `error-строка`, `CI-матрица`) are not rows here. The `glued` rule catches every Latin+Cyrillic token.\n\n## Pattern syntax (column `term`)\n\n- One cell holds one or more patterns, separated by commas.\n- `стем:n` — the stem plus a noun or adjective ending (`оракул:n` → оракул, оракула, оракулом, оракулы).\n- `стем:v` — the stem plus a verb ending (`скип:v` → скипнуть, скипнут, скипает, скипан).\n- `стем:nv` — both. A bare word with no `:` matches only itself.\n- `[за,про]стем:v` — optional prefixes. The stem without a prefix also matches.\n- Several words separated by spaces form a phrase. The words must follow each other with only spaces between them.\n- `#` in a phrase matches a number (`уверенност:n #` → «уверенность 5»).\n- Matching ignores case and treats ё as е. A word matches only as a whole word, never as part of a longer word.\n- The `example` cell is «bad» → «good». A test checks that the bad side fires the row and the good side does not.\n\nKinds: `slang` | `cyrillized` | `metaphor` | `pipeline`. Every hit is a hard finding (exit 1).\n\n| term | kind | use instead | example |\n|---|---|---|---|\n",
+      "columns": [
+        "term",
+        "kind",
+        "use instead",
+        "example"
+      ],
+      "rows": [
+        [
+          "`дельт:n`",
+          "pipeline",
+          "изменения с прошлого ревью",
+          "«Проверил текущую дельту.» → «Проверил изменения после прошлого ревью.»"
+        ],
+        [
+          "`prior`",
+          "pipeline",
+          "прежний, из прошлого ревью",
+          "«prior-проблема закрыта» → «прежняя проблема закрыта»"
+        ],
+        [
+          "`in-diff`",
+          "pipeline",
+          "в изменениях MR",
+          "«замечание in-diff не подтверждено» → «замечание по изменениям MR не подтверждено»"
+        ],
+        [
+          "`finding`, `findings`",
+          "pipeline",
+          "замечание, замечания",
+          "«Prior findings не подтверждены» → «Прежние замечания не подтверждены»"
+        ],
+        [
+          "`ревьюер:n`",
+          "pipeline",
+          "убрать; писать сам вывод",
+          "«Регрессий ревьюеры не нашли.» → «Регрессий нет.»"
+        ],
+        [
+          "`codex`, `claude`",
+          "pipeline",
+          "убрать имя инструмента",
+          "«Второй проход (codex) ничего не проверил.» → «Часть проверок не выполнена: репозиторий не открылся.»"
+        ],
+        [
+          "`уверенност:n #`",
+          "pipeline",
+          "убрать оценку уверенности",
+          "«Его прислали с уверенностью 5.» → «Замечание спорное.»"
+        ],
+        [
+          "`что отброшено`, `я отбросил`",
+          "pipeline",
+          "«Не вошли в отчёт:»",
+          "«Что отброшено:» → «Не вошли в отчёт:»"
+        ],
+        [
+          "`замечани:n отклонено`",
+          "pipeline",
+          "«Не вошло в отчёт: …»",
+          "«Третье замечание отклонено.» → «Не вошло в отчёт замечание про `SERVICE=billing`.»"
+        ],
+        [
+          "`не дублирую`, `не закрываю`, `не публикую`",
+          "pipeline",
+          "писать только статус: «остаётся неисправленным»",
+          "«Её не закрываю и повторно не публикую.» → «Замечание остаётся неисправленным.»"
+        ],
+        [
+          "`resolved_prior`",
+          "pipeline",
+          "убрать",
+          "«поэтому resolved_prior пустой» → «Прежние замечания остаются неисправленными.»"
+        ],
+        [
+          "`ног:n`",
+          "slang",
+          "запуск, job CI (учётные «ноги» — см. `ru-domain`)",
+          "«ночная матрица запускает ногу `admin`» → «ночная матрица запускает job `admin`»"
+        ],
+        [
+          "`ручк:n`",
+          "slang",
+          "эндпоинт, метод API",
+          "«новая ручка отдаёт 500» → «новый эндпоинт отдаёт 500»"
+        ],
+        [
+          "`флап:nv`",
+          "slang",
+          "падает через раз, нестабильный тест",
+          "«тест флапает» → «тест падает через раз»"
+        ],
+        [
+          "`лейн:n`",
+          "slang",
+          "тестовый проект, набор тестов",
+          "«пропустит зависимые лейны» → «пропустит зависимые тестовые проекты»"
+        ],
+        [
+          "`кебаб:n`",
+          "slang",
+          "меню строки (три точки)",
+          "«выбирает первый кебаб» → «выбирает первое меню строки»"
+        ],
+        [
+          "`модалк:n`",
+          "slang",
+          "модальное окно",
+          "«закрытие модалки» → «закрытие модального окна»"
+        ],
+        [
+          "`[за,про]скип:nv`",
+          "cyrillized",
+          "пропуск, пропущен, пропустить",
+          "«набор остаётся скипнутым» → «набор пропущен целиком»"
+        ],
+        [
+          "`гейт:n`",
+          "cyrillized",
+          "условие запуска, проверка, порог",
+          "«Гейт разрешает набор только при `APP_ENV == \"staging\"`.» → «Условие запуска допускает набор только при `APP_ENV == \"staging\"`.»"
+        ],
+        [
+          "`гард:n`",
+          "cyrillized",
+          "защитная проверка",
+          "«Гард может скрыть потерю покрытия» → «Защитная проверка может скрыть потерю покрытия»"
+        ],
+        [
+          "`пин:n`, `запинить`, `запинен:n`",
+          "cyrillized",
+          "закрепление (версии, окружения)",
+          "«без пина окружения» → «окружение не закреплено»"
+        ],
+        [
+          "`ретрай:n`, `ретра:nv`",
+          "cyrillized",
+          "повтор, повторная попытка",
+          "«после ретрая» → «после повторной попытки»"
+        ],
+        [
+          "`флаппинг:n`",
+          "cyrillized",
+          "чередование отказов и восстановлений",
+          "«После флаппинга запись остаётся.» → «После чередования отказов и восстановлений запись остаётся.»"
+        ],
+        [
+          "`демот:v`, `демоушен:n`",
+          "cyrillized",
+          "понизить уровень лога, понижение уровня",
+          "«демотировать в Debug» → «понизить до уровня `Debug`»"
+        ],
+        [
+          "`тред:n`",
+          "cyrillized",
+          "обсуждение",
+          "«в старом треде» → «в старом обсуждении»"
+        ],
+        [
+          "`[с,за]мерж:nv`, `[с,за]мердж:nv`",
+          "cyrillized",
+          "слияние, влить",
+          "«нужны изменения перед мержем» → «нужны изменения перед слиянием»"
+        ],
+        [
+          "`фикс:n`, `[по]фикси:v`",
+          "cyrillized",
+          "исправление, исправить",
+          "«фикс закрывает проблему» → «исправление закрывает проблему»"
+        ],
+        [
+          "`кейс:n`",
+          "cyrillized",
+          "сценарий, тест-кейс (TestRail)",
+          "«ломает сами кейсы» → «ломает сами сценарии»"
+        ],
+        [
+          "`дефолт:n`, `дефолтн:n`",
+          "cyrillized",
+          "по умолчанию",
+          "«дефолтное значение» → «значение по умолчанию»"
+        ],
+        [
+          "`ридер:n`",
+          "cyrillized",
+          "модуль чтения, `reader` в backticks",
+          "«ошибки ридера» → «ошибки модуля чтения»"
+        ],
+        [
+          "`хендлер:n`, `хэндлер:n`",
+          "cyrillized",
+          "обработчик",
+          "«хендлер не проверяет сумму» → «обработчик не проверяет сумму»"
+        ],
+        [
+          "`хелпер:n`",
+          "cyrillized",
+          "вспомогательная функция",
+          "«вынести в хелпер» → «вынести во вспомогательную функцию»"
+        ],
+        [
+          "`резолв:nv`, `резолвинг:n`",
+          "cyrillized",
+          "разрешение, определение",
+          "«резолв адреса падает» → «определение адреса падает»"
+        ],
+        [
+          "`фолбэк:n`, `фолбек:n`",
+          "cyrillized",
+          "запасной вариант",
+          "«срабатывает фолбэк» → «срабатывает запасной вариант»"
+        ],
+        [
+          "`флоу`",
+          "cyrillized",
+          "сценарий, процесс",
+          "«основной флоу» → «основной сценарий»"
+        ],
+        [
+          "`лок:n`",
+          "cyrillized",
+          "блокировка",
+          "«лок не снимается» → «блокировка не снимается»"
+        ],
+        [
+          "`сьют:n`",
+          "cyrillized",
+          "набор тестов",
+          "«весь сьют `checkout`» → «весь набор тестов `checkout`»"
+        ],
+        [
+          "`скоуп:n`",
+          "cyrillized",
+          "область поиска, охват",
+          "«без скоупа строки» → «без ограничения поиска строкой»"
+        ],
+        [
+          "`консьюмер:n`",
+          "cyrillized",
+          "потребитель, `consumer`",
+          "«консьюмер коммитит offset» → «потребитель подтверждает смещение»"
+        ],
+        [
+          "`дисмисс:n`, `дисмис:v`",
+          "cyrillized",
+          "закрытие, закрыть",
+          "«дисмисс окна» → «закрытие окна»"
+        ],
+        [
+          "`дедуп:n`",
+          "cyrillized",
+          "дедупликация",
+          "«новый дедуп игнорирует порядок» → «новая дедупликация игнорирует порядок»"
+        ],
+        [
+          "`грейс:n`",
+          "cyrillized",
+          "льготный период",
+          "«должники в грейсе» → «должники в льготном периоде»"
+        ],
+        [
+          "`копирайт:n`",
+          "cyrillized",
+          "текст (кнопки, сообщения)",
+          "«промах локатора или копирайта» → «промах локатора или текста кнопки»"
+        ],
+        [
+          "`батч:n`",
+          "cyrillized",
+          "пакет",
+          "«отправляет весь батч» → «отправляет весь пакет»"
+        ],
+        [
+          "`ассерт:nv`",
+          "cyrillized",
+          "проверка (`assert`)",
+          "«обернуть только целевой ассерт» → «обернуть только целевую проверку»"
+        ],
+        [
+          "`оракул:n`",
+          "metaphor",
+          "проверка, ожидаемый результат",
+          "«используется как оракул удаления» → «используется в проверке удаления»"
+        ],
+        [
+          "`мутант:n`",
+          "metaphor",
+          "мутационный тест (определить один раз)",
+          "«покрыты мутантами» → «покрыты мутационными тестами»"
+        ],
+        [
+          "`герметичн:n`",
+          "metaphor",
+          "изолированный, без стенда",
+          "«герметичная таблица решений» → «изолированная таблица решений»"
+        ],
+        [
+          "`узел`, `узл:n`",
+          "metaphor",
+          "тест (хост и нода — см. `ru-domain`)",
+          "«каждый такой узел становится `skipped`» → «каждый такой тест становится `skipped`»"
+        ],
+        [
+          "`щит:n`",
+          "metaphor",
+          "защитная проверка",
+          "«добавлен новый щит» → «добавлена новая защитная проверка»"
+        ],
+        [
+          "`сторож:n`",
+          "metaphor",
+          "проверка",
+          "«добавляет сторожа закрытых заказов» → «добавляет проверку закрытых заказов»"
+        ],
+        [
+          "`шторм:n`",
+          "metaphor",
+          "поток записей в логе",
+          "«даёт полный шторм» → «даёт поток записей в логе»"
+        ],
+        [
+          "`дыр:n`",
+          "metaphor",
+          "проблема, пробел",
+          "«логика имеет дыры» → «в логике остаются проблемы»"
+        ],
+        [
+          "`[по]красне:v`",
+          "metaphor",
+          "падает",
+          "«проверка краснеет каждую ночь» → «проверка падает каждую ночь»"
+        ],
+        [
+          "`глота:v`, `[про]глатыва:v`",
+          "metaphor",
+          "скрывает, игнорирует (ошибку)",
+          "«xfail глотает ошибки» → «xfail скрывает ошибки»"
+        ],
+        [
+          "`[за]молч:v`, `молчалив:n`",
+          "metaphor",
+          "не пишет в лог, проходит без ошибки",
+          "«падение может молчать до TTL» → «падение может не попасть в лог до истечения TTL»"
+        ],
+        [
+          "`громк:n`",
+          "metaphor",
+          "уровня `Error` или `Warn`",
+          "«от последней громкой строки» → «от последней строки уровня `Error`»"
+        ],
+        [
+          "`жечь`, `жжет`, `жгут`, `сжечь`",
+          "metaphor",
+          "тратить, расходовать",
+          "«могут жечь общий счётчик» → «могут расходовать общий счётчик»"
+        ],
+        [
+          "`схлопн:v`",
+          "metaphor",
+          "исчезла, свернулась",
+          "«группа схлопнулась» → «группа исчезла со страницы»"
+        ],
+        [
+          "`различающ:n сил:n`",
+          "metaphor",
+          "способность теста поймать ошибку",
+          "«про различающую силу тестов» → «про то, ловят ли тесты ошибку»"
+        ],
+        [
+          "`лини:n защиты`",
+          "metaphor",
+          "последняя проверка",
+          "«как последнюю линию защиты» → «как последнюю проверку»"
+        ]
+      ],
+      "trailer": ""
+    },
+    {
+      "name": "ru-allowed",
+      "preamble": "# ru-allowed — accepted words that never fire\n\n**Status:** v2, 2026-10-08. This file is the source of truth; edit it directly.\n\nSame pattern syntax as `ru-non-approved` (`стем:n`, `стем:v`, `[пре]стем`, exact word).\n\nClasses:\n- `latin` — a Latin word that may stand in prose without backticks. It never fires `latin-prose`. Case is ignored.\n- `loanword` — a standard Russian IT loanword. If a token or a hyphen part matches, no lexicon row fires on it.\n- `glued` — a Latin acronym + hyphen + Russian noun that Russian orthography accepts. Only listed compounds pass the `glued` rule.\n\nGlued decision: `CI-` compounds are never allowed. «CI-матрица» is banned, so «CI-пайплайн», «CI-нога» and «CI-сервис» fire too. Write «пайплайн CI», «матрица CI». Acronyms that name a protocol or a format (HTTP, gRPC, SQL, JSON, API, FIFO) may glue to a short generic noun listed below.\n\n| term | class | note |\n|---|---|---|\n",
+      "columns": [
+        "term",
+        "class",
+        "note"
+      ],
+      "rows": [
+        [
+          "`CI`",
+          "latin",
+          ""
+        ],
+        [
+          "`API`",
+          "latin",
+          ""
+        ],
+        [
+          "`MR`",
+          "latin",
+          ""
+        ],
+        [
+          "`PR`",
+          "latin",
+          ""
+        ],
+        [
+          "`TTL`",
+          "latin",
+          ""
+        ],
+        [
+          "`SQL`",
+          "latin",
+          ""
+        ],
+        [
+          "`HTTP`",
+          "latin",
+          ""
+        ],
+        [
+          "`HTTPS`",
+          "latin",
+          ""
+        ],
+        [
+          "`JSON`",
+          "latin",
+          ""
+        ],
+        [
+          "`YAML`",
+          "latin",
+          ""
+        ],
+        [
+          "`CSV`",
+          "latin",
+          ""
+        ],
+        [
+          "`gRPC`",
+          "latin",
+          ""
+        ],
+        [
+          "`RPC`",
+          "latin",
+          ""
+        ],
+        [
+          "`REST`",
+          "latin",
+          ""
+        ],
+        [
+          "`URL`",
+          "latin",
+          ""
+        ],
+        [
+          "`UUID`",
+          "latin",
+          ""
+        ],
+        [
+          "`ID`",
+          "latin",
+          ""
+        ],
+        [
+          "`UI`",
+          "latin",
+          ""
+        ],
+        [
+          "`DOM`",
+          "latin",
+          ""
+        ],
+        [
+          "`DB`",
+          "latin",
+          ""
+        ],
+        [
+          "`DLQ`",
+          "latin",
+          ""
+        ],
+        [
+          "`FIFO`",
+          "latin",
+          ""
+        ],
+        [
+          "`TLS`",
+          "latin",
+          ""
+        ],
+        [
+          "`DNS`",
+          "latin",
+          ""
+        ],
+        [
+          "`JWT`",
+          "latin",
+          ""
+        ],
+        [
+          "`PII`",
+          "latin",
+          ""
+        ],
+        [
+          "`CPU`",
+          "latin",
+          ""
+        ],
+        [
+          "`OOM`",
+          "latin",
+          ""
+        ],
+        [
+          "`FX`",
+          "latin",
+          ""
+        ],
+        [
+          "`Go`",
+          "latin",
+          ""
+        ],
+        [
+          "`Python`",
+          "latin",
+          ""
+        ],
+        [
+          "`TypeScript`",
+          "latin",
+          ""
+        ],
+        [
+          "`pytest`",
+          "latin",
+          ""
+        ],
+        [
+          "`Playwright`",
+          "latin",
+          ""
+        ],
+        [
+          "`TestRail`",
+          "latin",
+          ""
+        ],
+        [
+          "`Allure`",
+          "latin",
+          ""
+        ],
+        [
+          "`JUnit`",
+          "latin",
+          ""
+        ],
+        [
+          "`Makefile`",
+          "latin",
+          ""
+        ],
+        [
+          "`Dockerfile`",
+          "latin",
+          ""
+        ],
+        [
+          "`Docker`",
+          "latin",
+          ""
+        ],
+        [
+          "`Kubernetes`",
+          "latin",
+          ""
+        ],
+        [
+          "`GitLab`",
+          "latin",
+          ""
+        ],
+        [
+          "`GitHub`",
+          "latin",
+          ""
+        ],
+        [
+          "`PostgreSQL`",
+          "latin",
+          ""
+        ],
+        [
+          "`Postgres`",
+          "latin",
+          ""
+        ],
+        [
+          "`SQLite`",
+          "latin",
+          ""
+        ],
+        [
+          "`Redis`",
+          "latin",
+          ""
+        ],
+        [
+          "`Kafka`",
+          "latin",
+          ""
+        ],
+        [
+          "`Elasticsearch`",
+          "latin",
+          ""
+        ],
+        [
+          "`Loki`",
+          "latin",
+          ""
+        ],
+        [
+          "`Grafana`",
+          "latin",
+          ""
+        ],
+        [
+          "`Jira`",
+          "latin",
+          ""
+        ],
+        [
+          "`ревью`",
+          "loanword",
+          "«ревьюер» is NOT allowed (pipeline jargon)"
+        ],
+        [
+          "`коммит:nv`, `[за]коммит:v`",
+          "loanword",
+          ""
+        ],
+        [
+          "`релиз:n`, `релизн:n`",
+          "loanword",
+          ""
+        ],
+        [
+          "`таймаут:n`",
+          "loanword",
+          ""
+        ],
+        [
+          "`кэш:nv`, `кеш:nv`",
+          "loanword",
+          ""
+        ],
+        [
+          "`тест:n`, `тестов:n`, `тест-кейс:n`",
+          "loanword",
+          "«тест-кейс» (TestRail) passes; bare «кейс» fires"
+        ],
+        [
+          "`пайплайн:n`",
+          "loanword",
+          ""
+        ],
+        [
+          "`лог:n`, `логгер:n`, `логир:v`",
+          "loanword",
+          ""
+        ],
+        [
+          "`воркер:n`",
+          "loanword",
+          ""
+        ],
+        [
+          "`фикстур:n`",
+          "loanword",
+          "pytest term"
+        ],
+        [
+          "`прогон:n`",
+          "loanword",
+          ""
+        ],
+        [
+          "`контур:n`",
+          "loanword",
+          "environment"
+        ],
+        [
+          "`тик:n`, `тикер:n`",
+          "loanword",
+          "worker tick, exchange ticker"
+        ],
+        [
+          "`локатор:n`, `селектор:n`, `хук:n`",
+          "loanword",
+          ""
+        ],
+        [
+          "`дашборд:n`, `эндпоинт:n`, `линтер:n`, `деплой:n`",
+          "loanword",
+          ""
+        ],
+        [
+          "`HTTP-запрос:n`, `HTTP-ответ:n`, `HTTP-клиент:n`, `HTTP-сервер:n`, `HTTP-код:n`",
+          "glued",
+          ""
+        ],
+        [
+          "`gRPC-клиент:n`, `gRPC-запрос:n`, `gRPC-метод:n`, `gRPC-сервис:n`, `gRPC-сервер:n`",
+          "glued",
+          ""
+        ],
+        [
+          "`SQL-запрос:n`, `JSON-ответ:n`, `JSON-пол:n`, `JSON-массив:n`, `JSON-объект:n`, `API-ключ:n`, `API-запрос:n`, `FIFO-очеред:n`",
+          "glued",
+          ""
+        ],
+        [
+          "`GET-запрос:n`, `POST-запрос:n`, `TCP-соединени:n`, `ASCII-символ:n`, `e2e-тест:n`, `unit-тест:n`, `UI-тест:n`",
+          "glued",
+          ""
+        ]
+      ],
+      "trailer": "\n`не-` + a Latin name (`не-ASCII`, `не-IPv4`) is standard spelling and never fires `glued`; this is a code rule, not a row.\n"
+    },
+    {
+      "name": "ru-domain",
+      "preamble": "# ru-domain — terms allowed only in a domain sense\n\n**Status:** v2, 2026-10-08. This file is the source of truth; edit it directly.\n\nA word here is also a row in `ru-non-approved`. When the lexicon hits it, `antislop.go` decides the sense:\n1. The sentence has a slang cue → hard `lexicon` finding (the slang sense, e.g. «нога» = CI job).\n2. Else the whole text has a domain cue → soft `domain` finding with the note below. Keep the word only if the code uses it.\n3. Else → hard `lexicon` finding.\n\nA cue matches the start of any word, code spans included (`матриц` matches «матрицей», `skip` matches `skipped`). Cues are case-insensitive. Separate cues with commas.\n\n| term | domain cues | slang cues | note |\n|---|---|---|---|\n",
+      "columns": [
+        "term",
+        "domain cues",
+        "slang cues",
+        "note"
+      ],
+      "rows": [
+        [
+          "`ног:n`",
+          "проводк, провод, outbox, charge, journal, журнал, ledger, леджер, accounting, quote, base, send, recv, сумм, выплат, списани, заказ, payout, инструмент, fee, routing, entry_id, баланс, залог, swap, своп",
+          "матриц, ci, job, джоб, pytest, прогон, запуск, app_env, ночн",
+          "учётные «ноги» проводки (legs): оставить, если так в коде; иначе «сумма `send`/`recv`», «сторона base/quote»"
+        ],
+        [
+          "`узел`, `узл:n`",
+          "кластер, хост, нод, rpc, блокчейн, blockchain, dom, граф, сеть, сети, сетев, k8s, kubernetes, валидатор",
+          "тест, прогон, smoke, pytest, кейс, testrail, skip, параметриз, оракул, мутант",
+          "«узел» = хост, нода, узел DOM или графа: оставить; «узел» = тест: писать «тест»"
+        ]
+      ],
+      "trailer": ""
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "source": "Hedge strength families, English to Russian. Edit this file directly.",
+  "files": [
+    {
+      "name": "hedges-en-ru",
+      "preamble": "# hedges-en-ru — hedge strength, English → Russian\n\n**Status:** v2, 2026-10-08. This file is the source of truth; edit it directly.\n\nA hedge is data. It tells the reader how sure the author is. Keep its strength exactly: «may lose the event» is «может потерять событие», never «теряет событие» and never «вероятно, теряет событие».\n\nRules:\n- Render each English hedge with a Russian word of the **same strength**. Rows with the same strength are one family: «вероятно» and «скорее всего» are interchangeable, «вероятно» and «возможно» are not.\n- A stack of hedges on one claim («возможно, может быть, вероятно») becomes ONE hedge of the strongest stated strength. Keep who made the assessment.\n- Add no certainty. «always», «definitely» in the Russian text need the same words in the source.\n- If you cannot tell advice from obligation, use the weaker one (`advice`).\n- An imperative («Добавьте …») does not count as `must`. If the source says «must» or «need to», write «нужно» or «должен».\n\nWhat `antislop.go --source SRC` checks:\n- For each strength, the Russian text must hold at least as many hedges as the source. A missing hedge is a hard `fidelity` finding of kind `hedge`.\n- `certain` works the other way: more `certain` words in the Russian text than in the source is a hard `fidelity` finding of kind `certainty`.\n- With a Russian source, the Russian column of both texts is compared. `advice` and `must` are checked only for an English source: Russian «стоит», «должен» have too many other senses.\n- English `could` right before `not` is a past fact («could not connect»), not a hedge.\n- «около» and «порядка» count only right before a number: «индекс порядка» is not a hedge. «примерно» and «приблизительно» count anywhere («примерно через 30 секунд»).\n\nColumn syntax: patterns in backticks. English: a plain word matches itself, `stem*` matches the start of a word, spaces form a phrase, `#` matches a number. Russian: the `ru-non-approved` syntax (`стем:n`, `стем:v`, phrases, `#`).\n\nStrengths: `possible` · `probable` · `unlikely` · `usual` · `often` · `approx` · `min` · `max` · `advice` · `must` · `certain`.\n\n| English hedge | strength | Russian renderings |\n|---|---|---|\n",
+      "columns": [
+        "English hedge",
+        "strength",
+        "Russian renderings"
+      ],
+      "rows": [
+        [
+          "`may`, `might`, `could`, `possibly`, `possible`, `perhaps`, `maybe`",
+          "possible",
+          "`возможно`, `возможн:n`, `может`, `могут`, `мог`, `могла`, `могло`, `могли`, `может быть`"
+        ],
+        [
+          "`potentially`, `potential`",
+          "possible",
+          "`потенциально`, `потенциальн:n`"
+        ],
+        [
+          "`it is possible that`, `there is a chance`",
+          "possible",
+          "`не исключено`"
+        ],
+        [
+          "`likely`, `probably`, `most likely`, `very likely`",
+          "probable",
+          "`вероятно`, `вероятнее`, `вероятн:n`, `скорее всего`"
+        ],
+        [
+          "`apparently`, `seemingly`, `presumably`, `seems to`, `appears to`, `it seems`",
+          "probable",
+          "`по-видимому`, `видимо`, `похоже`, `предположительно`, `предположительн:n`, `судя по всему`"
+        ],
+        [
+          "`unlikely`, `improbable`",
+          "unlikely",
+          "`маловероятно`, `маловероятн:n`, `вряд ли`"
+        ],
+        [
+          "`usually`, `typically`, `generally`, `normally`, `as a rule`",
+          "usual",
+          "`как правило`, `обычно`"
+        ],
+        [
+          "`often`, `frequently`",
+          "often",
+          "`часто`, `нередко`"
+        ],
+        [
+          "`about #`, `approximately #`, `around #`, `roughly #`",
+          "approx",
+          "`примерно`, `приблизительно`, `около #`, `порядка #`"
+        ],
+        [
+          "`at least`",
+          "min",
+          "`не менее`, `как минимум`, `минимум`, `хотя бы`"
+        ],
+        [
+          "`at most`, `no more than`, `up to #`",
+          "max",
+          "`не более`, `как максимум`, `максимум`, `до #`"
+        ],
+        [
+          "`should`, `recommend*`, `consider`, `ought to`, `better to`",
+          "advice",
+          "`стоит`, `следует`, `рекоменду:v`, `лучше`, `желательно`, `имеет смысл`, `должен`, `должна`, `должно`, `должны`"
+        ],
+        [
+          "`must`, `need to`, `needs to`, `have to`, `has to`, `required`",
+          "must",
+          "`нужно`, `надо`, `необходимо`, `обязан:n`, `обязательно`, `обязательн:n`, `должен`, `должна`, `должно`, `должны`, `требуется`, `нужен`, `нужна`, `нужны`"
+        ],
+        [
+          "`definitely`, `certainly`, `surely`, `guaranteed`, `always`, `never`, `exactly`, `precisely`, `obviously`",
+          "certain",
+          "`точно`, `наверняка`, `определенно`, `несомненно`, `гарантированно`, `всегда`, `никогда`, `очевидно`, `безусловно`"
+        ]
+      ],
+      "trailer": ""
+    }
+  ]
+}
