@@ -1,4 +1,4 @@
-// antislop is the deterministic gate of the antislop-rus skill: it checks Russian code-review text
+// antislop is the deterministic gate of the antislop-rus skill: it checks Russian technical text
 // for slop, and with --source it checks that no fact of the source (English or Russian) was lost.
 //
 //	go run scripts/antislop.go [--json] [--source SRC] FILE|-

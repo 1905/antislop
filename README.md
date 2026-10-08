@@ -5,9 +5,9 @@
 `antislop` contains two skills for clear technical text:
 
 - `antislop-eng` writes English in controlled technical English. Its checker examines the text against an approved-word dictionary and a set of writing rules.
-- `antislop-rus` translates English text into clear Russian, or cleans a Russian review comment. Its gate finds slang, Cyrillized English and missing hedges, numbers or identifiers.
+- `antislop-rus` translates English text into clear Russian, or cleans Russian technical text. Its gate finds slang, Cyrillized English and missing hedges, numbers or identifiers.
 
-For a review comment in Russian, use the two skills in sequence. First, write the English text with `antislop-eng`. Then translate this text with `antislop-rus`.
+To write a spec, a plan or technical documentation in Russian, use the two skills in sequence. First, write the English text with `antislop-eng`. Then translate this text with `antislop-rus`.
 
 Go 1.22 or higher is necessary. The sections below give the instructions for AI agents.
 
@@ -16,9 +16,9 @@ Go 1.22 or higher is necessary. The sections below give the instructions for AI 
 `antislop` содержит два навыка для ясного технического текста:
 
 - `antislop-eng` пишет английский текст простым техническим языком. Его проверка сравнивает текст со словарём одобренных слов и набором правил.
-- `antislop-rus` переводит английский текст на ясный русский язык или чистит русское замечание к коду. Его проверка находит сленг и английские слова, записанные кириллицей. Ещё она находит потерянные оговорки, числа или идентификаторы.
+- `antislop-rus` переводит английский текст на ясный русский язык или чистит русский технический текст. Его проверка находит сленг и английские слова, записанные кириллицей. Ещё она находит потерянные оговорки, числа или идентификаторы.
 
-Чтобы написать замечание к коду на русском языке, используйте два навыка по очереди. Сначала напишите английский текст с помощью `antislop-eng`. Затем переведите этот текст с помощью `antislop-rus`.
+Чтобы написать спецификацию, план или техническую документацию на русском языке, используйте два навыка по очереди. Сначала напишите английский текст с помощью `antislop-eng`. Затем переведите этот текст с помощью `antislop-rus`.
 
 Нужен Go 1.22 или более новая версия. Инструкции для ИИ-агентов приведены в разделах ниже.
 
@@ -39,13 +39,13 @@ The new nightly CI job gives the correct result for this check. But this job is 
 Russian, before:
 
 ```text
-Проверил текущую дельту: два prior-замечания закрыты, ревьюер подтвердил это с уверенностью 7.
+Фикс в `config.yaml` не помог: ретрай флапает, поэтому гейт в CI пока скипаем.
 ```
 
 Russian, after:
 
 ```text
-Проверил изменения после прошлого ревью. Два прежних замечания исправлены.
+Исправление в `config.yaml` не помогло. Повторная попытка падает через раз, поэтому проверку в CI пока пропускаем.
 ```
 
 ## What the repository contains
@@ -53,7 +53,7 @@ Russian, after:
 This repository contains two Agent Skills for clear technical text. Each skill has one Go gate. A gate gives the same result each time that it examines the same text. The skills change only the wording of a text. They keep all facts, identifiers, numbers, conditions and hedge strengths.
 
 - **antislop-eng** writes and examines English against an approved-word dictionary and a set of writing rules. It contains the rules in `SKILL.md`, the dictionary `scripts/dictionary.json` and its gate, the checker `check.go`.
-- **antislop-rus** translates English engineering text into clear Russian. It also cleans a review comment that is in Russian. It contains an EN→RU glossary, a table of hedge strengths, style rules and the gate `antislop.go`.
+- **antislop-rus** translates English engineering text into clear Russian. It also cleans technical text that is in Russian. It contains an EN→RU glossary, a table of hedge strengths, style rules and the gate `antislop.go`.
 
 Each skill directory contains these items:
 
@@ -144,8 +144,8 @@ Use these rules to select the skill:
 
 - If you write or examine English technical text, use antislop-eng.
 - If you translate English technical text into Russian, use antislop-rus.
-- If you clean a review comment that is in Russian, use antislop-rus.
-- If you write a code-review comment, an incident note or a status report in Russian, use the pipeline.
+- If you clean technical text that is in Russian, use antislop-rus.
+- If you write a spec, a plan, technical documentation, an incident note or a status report in Russian, use the pipeline.
 
 The checker uses a controlled vocabulary and these rules:
 
@@ -158,8 +158,9 @@ The checker uses a controlled vocabulary and these rules:
 
 The rules are applicable to manuals and procedures. The skill also uses them for these texts:
 
-- Code-review comments
-- Comments on merge requests
+- Specifications
+- Implementation plans
+- Technical documentation
 - Incident reports
 - Tool descriptions
 - Error messages.
@@ -167,7 +168,7 @@ The rules are applicable to manuals and procedures. The skill also uses them for
 For antislop-eng, select the mode from the text type:
 
 - For procedures, instructions, safety text, error messages, tool descriptions and task plans for agents, use **Strict** mode. In Strict mode, all rules are applicable, and the dictionary is also applicable.
-- For explanations, code-review comments, design notes and status reports, use **Relaxed** mode. In Relaxed mode, all structure rules are applicable.
+- For explanations, specs, design notes and status reports, use **Relaxed** mode. In Relaxed mode, all structure rules are applicable.
 
 In Relaxed mode, examine each non-approved word that the checker reports. If the approved word keeps the meaning, use the approved word. If the approved word changes the meaning, keep the word of the source.
 
@@ -180,7 +181,7 @@ In the two modes, keep the strength of each hedge:
 
 ## The pipeline
 
-The two skills are the two steps of one pipeline. Use the pipeline for code-review comments, incident notes and status reports:
+The two skills are the two steps of one pipeline. Use the pipeline for specs, plans, technical documentation, incident notes and status reports:
 
 1. **Use antislop-eng to write the English text.** The result is short English text with one meaning for each sentence. All hedges keep their strength.
 2. **Use antislop-rus to translate the English text.** The result is Russian text with no slang and no Cyrillized English. The Russian text keeps all hedges, numbers and identifiers.
@@ -192,7 +193,7 @@ For each step, do the same gate loop:
 3. Use the gate again.
 4. Stop after 3 cycles of the loop. If you keep a finding on purpose, write the finding on one line after the text.
 
-You can also use each skill without the other skill. Use antislop-eng on English technical text. Use antislop-rus on an English source text or on a Russian review comment.
+You can also use each skill without the other skill. Use antislop-eng on English technical text. Use antislop-rus on an English source text or on Russian technical text.
 
 ## Use the gates
 
@@ -300,18 +301,17 @@ The gate reports findings for these rules:
 | `length` | soft | a sentence over 25 words |
 | `facts` | soft | a sentence with 3 or more clause breaks |
 
-Russian review comments from developers and from language models frequently contain words of these types:
+Russian technical texts from developers and from language models frequently contain words of these types:
 
 - Slang: «нога» for a CI job, «флапает»
 - Cyrillized English: «скипнуть», «гейт», «ретрай»
-- Review-pipeline jargon: «дельта», «prior-замечания», «ревьюер»
 - Latin glued to Cyrillic: «guard'ом», «CI-матрица».
 
 Before the reader can know the fact, the reader must find the meaning of each of these words. Translations from English add one more problem. The translations do not keep hedges («may lose» becomes «теряет»), and they change identifiers.
 
 antislop-rus does not accept these words. antislop-rus keeps these words and items:
 
-- Standard loanwords: CI, ревью, коммит, релиз, таймаут, кэш, тест, API, пайплайн, MR
+- Standard loanwords: CI, коммит, релиз, таймаут, кэш, тест, API, пайплайн, MR
 - Standard compounds: «HTTP-запрос», «gRPC-клиент»
 - Domain words in their literal sense: «ноги» of a posting, «узел» of a cluster
 - All identifiers, byte for byte.
@@ -323,7 +323,7 @@ Before you translate, record each identifier, number, condition, hedge, alternat
 ### Select the mode and the glossary
 
 1. Select the mode from the document type:
-   - For design notes, explanations and review comments, use Relaxed mode.
+   - For specs, design notes and explanations, use Relaxed mode.
    - For procedures, task plans for agents and instructions, use Strict mode.
 2. Keep one glossary file for each feature or document set. Use the same file for all related documents.
 3. Before you add a term to the glossary, use `--lookup` on the term.
@@ -363,7 +363,7 @@ If a document has more than approximately 1500 words, do the walk for each secti
 
 Do not change code, commands, identifiers, paths, numbers or the text of error messages.
 
-### Write a review text in Russian
+### Write a technical text in Russian
 
 1. Use antislop-eng to write the English text.
 2. Do the gate loop and the walk on the English text.
@@ -373,8 +373,6 @@ Do not change code, commands, identifiers, paths, numbers or the text of error m
 6. After each change to a text, do the full pass on that text again.
 
 ## Examples
-
-No example comes from a code review.
 
 ### antislop-eng examples
 
@@ -464,7 +462,7 @@ HEDGE WORDS — keep the strength of the claim; never change a possibility into 
   likely x1  ->  "IT IS VERY POSSIBLE THAT ...". Keep it a possibility, not a fact.
 ```
 
-In the dictionary, *event* is not an approved general word. In a code review, an event is a technical noun. Thus, `terms.txt` contains the word *event*.
+In the dictionary, *event* is not an approved general word. In software text, an event is a technical noun. Thus, `terms.txt` contains the word *event*.
 
 After:
 
@@ -562,29 +560,29 @@ After:
 
 Gate output: `ex1-after.md: 0 hard, 0 soft`.
 
-#### Example 2: review-pipeline jargon
+#### Example 2: more Cyrillized English
 
 Before:
 
 ```text
-Проверил текущую дельту: два prior-замечания закрыты, ревьюер подтвердил это с уверенностью 7.
+Фикс в `config.yaml` не помог: ретрай флапает, поэтому гейт в CI пока скипаем.
 ```
 
 Gate output:
 
 ```text
-HARD lexicon     1:18      «дельту»  pipeline: → изменения с прошлого ревью
-HARD lexicon     1:30      «prior»  pipeline: → прежний, из прошлого ревью
-HARD glued       1:30      «prior-замечания»  латиница + русское слово: имя в backticks отдельно от русского слова, или русское слово целиком
-HARD lexicon     1:55      «ревьюер»  pipeline: → убрать; писать сам вывод
-HARD lexicon     1:80      «уверенностью 7»  pipeline: → убрать оценку уверенности
+HARD lexicon     1:1       «Фикс»  cyrillized: → исправление, исправить
+HARD lexicon     1:32      «ретрай»  cyrillized: → повтор, повторная попытка
+HARD lexicon     1:39      «флапает»  slang: → падает через раз, нестабильный тест
+HARD lexicon     1:56      «гейт»  cyrillized: → условие запуска, проверка, порог
+HARD lexicon     1:71      «скипаем»  cyrillized: → пропуск, пропущен, пропустить
 ex2.md: 5 hard, 0 soft
 ```
 
 After:
 
 ```text
-Проверил изменения после прошлого ревью. Два прежних замечания исправлены.
+Исправление в `config.yaml` не помогло. Повторная попытка падает через раз, поэтому проверку в CI пока пропускаем.
 ```
 
 Gate output: `ex2-after.md: 0 hard, 0 soft`.
@@ -718,7 +716,7 @@ Each `go test` command starts the test suite of one skill.
 - If the two tables do not contain a word, the gate accepts the word. For example, the gate accepts «на стейджинге» and the adjective «красным». Only the full-text pass of the skill procedure finds these words.
 - The gate does not examine grammar, word sequence or meaning. The gate does not find a new fact that has no number, no identifier and no certainty word.
 - If the source is in Russian, the gate does not compare `advice` and `must` hedges. The cause is that the Russian words «стоит» and «должен» have too many other senses.
-- `scripts/testdata/slop_cases.json` contains 20 review comments for the tests. A person manually identified each slop item in these comments with a label. The gate finds all 84 slop items that have a label, and each of the 87 hard findings agrees with a label. The author wrote these test cases for this version of the lexicon. The test cases show that each rule operates as designed. The test cases do not give an estimate of the accuracy on text that is not in the test cases.
+- `scripts/testdata/slop_cases.json` contains 20 Russian texts for the tests. A person manually identified each slop item in these comments with a label. The gate finds all 84 slop items that have a label, and each of the 87 hard findings agrees with a label. The author wrote these test cases for this version of the lexicon. The test cases show that each rule operates as designed. The test cases do not give an estimate of the accuracy on text that is not in the test cases.
 
 ## Repository layout
 
@@ -729,7 +727,6 @@ Each `go test` command starts the test suite of one skill.
 └── skills/
     ├── antislop-eng/
     │   ├── SKILL.md
-    │   ├── CHANGELOG.md
     │   └── scripts/
     │       ├── check.go                  the checker
     │       ├── check_test.go

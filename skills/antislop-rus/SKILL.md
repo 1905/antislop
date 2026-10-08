@@ -1,13 +1,13 @@
 ---
 name: antislop-rus
-description: "Translate English code-review and engineering text (MR/PR review findings, review summaries, incident notes, status reports) into plain Russian, or clean an existing Russian review, with no slop and no meaning loss. Bans slang («нога», «ручка», «флапать»), Cyrillized English («скипнуть», «гейт», «ретрай»), Latin glued to Cyrillic («guard'ом», «CI-матрица») and review-pipeline jargon («дельта», «prior», «ревьюер»), keeps standard loanwords (CI, ревью, коммит, таймаут, кэш, MR), and keeps every identifier, number, condition and hedge. Bundles an EN→RU glossary, a hedge-strength table, style rules and a Go gate. Triggers: «переведи ревью», «переведи на русский», «убери слоп», «почисти ревью», «без англицизмов», translate review to Russian, antislop-rus."
+description: "Translate English engineering text (specs, implementation plans, technical documentation, design notes, incident notes, status reports) into plain Russian, or clean an existing Russian technical text, with no slop and no meaning loss. Bans slang («нога», «ручка», «флапать»), Cyrillized English («скипнуть», «гейт», «ретрай») and Latin glued to Cyrillic («guard'ом», «CI-матрица»), keeps standard loanwords (CI, коммит, таймаут, кэш, MR), and keeps every identifier, number, condition and hedge. Bundles an EN→RU glossary, a hedge-strength table, style rules and a Go gate. Triggers: «переведи на русский», «переведи спеку», «переведи документацию», «убери слоп», «почисти текст», «без англицизмов», translate to Russian, antislop-rus."
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # antislop-rus
 
-Turn an English review (or a Russian one full of slop) into Russian that a developer reads once and understands. The form changes. The facts, identifiers, numbers, conditions and hedge strengths do not.
+Turn an English technical text (or a Russian one full of slop) into Russian that a developer reads once and understands. The form changes. The facts, identifiers, numbers, conditions and hedge strengths do not.
 
 ## Commands
 
@@ -31,6 +31,8 @@ What the gate reports:
 A finding is a candidate, not an order. Check it against the rule before you edit.
 
 ## Procedure
+
+0. **Input.** Work only on the text or the one file path the caller names. If none is named, say `no input given` and stop: never pick a file yourself. Write the result to the reply (or to a new file the caller names); edit a file in place only when the caller asks for it.
 
 1. **Fact ledger.** Before writing, list every item of the source:
    - each identifier, path, `file:line`, env var, status name, error string, number with its unit;
@@ -83,19 +85,19 @@ RU:  Если `APP_ENV` не равен `staging`, набор тестов пр�
 
 ## Boundaries
 
-**Will:** translate and clean code-review and engineering text; keep every ledger item at its strength; use the bundled tables as the authority; keep a precise long form when a short one loses a ledger item.
+**Will:** translate and clean engineering text; keep every ledger item at its strength; use the bundled tables as the authority; keep a precise long form when a short one loses a ledger item.
 
 **Will not:**
 - Turn «may fail» into «падает», or «likely» into «точно».
 - Add a cause, a frequency, a mechanism or a number that the source does not state.
 - Translate identifiers, paths, env vars, status names or error strings.
-- Replace a loanword developers use (CI, ревью, коммит, релиз, таймаут, кэш, тест, API, пайплайн, MR) with a calque.
+- Replace a loanword developers use (CI, коммит, релиз, таймаут, кэш, тест, API, пайплайн, MR) with a calque.
 - Rewrite marketing or creative copy.
 
 ## Files
 
 - `scripts/antislop.go` — the gate, one Go file, standard library only.
 - `scripts/data/lexicon.json` — the Russian lexicon: banned words, accepted loanwords, domain words. The source of truth; edit it directly.
-- `scripts/data/glossary.json` — the English-Russian review glossary. The source of truth; edit it directly.
+- `scripts/data/glossary.json` — the English-Russian technical glossary. The source of truth; edit it directly.
 - `scripts/data/hedges.json` — hedge strength families, English to Russian. The source of truth; edit it directly.
 - `scripts/antislop_test.go` — tests: `cd scripts && go test antislop.go antislop_test.go` (no go.mod needed).

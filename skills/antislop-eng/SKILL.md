@@ -1,13 +1,26 @@
 ---
 name: antislop-eng
-description: "Write or rewrite English in controlled technical English: technical documentation, manuals, installation and operating procedures, maintenance steps, safety warnings, troubleshooting guides, AND English code-review comments, MR/PR feedback, incident and status reports, tool descriptions, error messages and other engineering text that a non-native reader or an AI agent must not misread. Use when the user mentions controlled language, plain technical English, or asks to make technical text unambiguous. Bundles an approved-word dictionary, the writing rules and a Go checker. Not for marketing, creative or conversational copy."
+argument-hint: "<file path> [mode] [section|lines] | <inline text>"
+description: "Pass the target as args (a file path or the inline text); with no input it stops and edits nothing. Write or rewrite English in controlled technical English: specs, implementation plans, design notes, technical documentation, manuals, installation and operating procedures, maintenance steps, safety warnings, troubleshooting guides, incident and status reports, tool descriptions, error messages and other engineering text that a non-native reader or an AI agent must not misread. Use when the user mentions controlled language, plain technical English, or asks to make technical text unambiguous. Bundles an approved-word dictionary, the writing rules and a Go checker. Not for marketing, creative or conversational copy."
 metadata:
-  version: "2.1.0"
+  version: "2.2.1"
 ---
 
 # Controlled technical English
 
 The rules remove choice: one approved word per meaning, one part of speech per word, one instruction per sentence, active voice, simple tenses, hard length limits. The dictionary decides, and a script checks the text against it.
+
+## Input
+
+**Args (the caller's input):**
+
+<input>
+$ARGUMENTS
+</input>
+
+- **No input:** if the `<input>` block is empty and the user did not paste the text or name a file path in the request, reply exactly `no input given — pass a file path or the text as args` and stop. Do not search for a file, do not guess a target from the working directory, recent files, git status or open plans, and do not edit or create any file.
+- **Scope:** edit only the one file path named in the input. Never edit, create or revert any other file (a glossary file only per Workflow step 2). If the named path does not exist, reply `file not found: <path>` and stop.
+- **Never** alter backtick spans, code, commands, identifiers, paths, file:line citations, quoted text, numbers or units. Keep every condition, limit, exception and hedge. Add no fact.
 
 ## Commands
 
@@ -21,15 +34,15 @@ The exit code is 0 even with findings. Read the report. Code fences, indented co
 
 ## Modes
 
-**Strict** — procedures, instructions, safety text, error messages, tool descriptions, inter-agent instructions. Every rule applies, the dictionary included. Replace every non-approved word.
+**Strict** — procedures, instructions, implementation plans, safety text, error messages, tool descriptions, inter-agent instructions. Every rule applies, the dictionary included. Replace every non-approved word.
 
-**Relaxed** — explanations, code-review comments, MR descriptions, design notes, status reports. Structure rules apply in full. The checker still reports dictionary hits, and you judge each one. Replace a hit when the approved word keeps the meaning and reads naturally. Keep it when the replacement changes or blurs the meaning. The hedge table applies in both modes.
+**Relaxed** — explanations, specs, design notes, status reports. Structure rules apply in full. The checker still reports dictionary hits, and you judge each one. Replace a hit when the approved word keeps the meaning and reads naturally. Keep it when the replacement changes or blurs the meaning. The hedge table applies in both modes.
 
 Pick the mode from the text type. Never ask for a procedure: strict is the answer.
 
 ## Workflow
 
-1. **Classify each block.** Procedural (tells the reader to do something): imperative, max 20 words per sentence. Descriptive: max 25 words, max 6 sentences per paragraph, one topic per paragraph. In a code-review comment, the requested change is procedural and the reason is descriptive.
+1. **Classify each block.** Procedural (tells the reader to do something): imperative, max 20 words per sentence. Descriptive: max 25 words, max 6 sentences per paragraph, one topic per paragraph. In a spec or plan, a task step is procedural and the cause for the step is descriptive.
 
 2. **Build the glossary.** The dictionary holds general words. Domain words are technical nouns (Rule 1.5) or technical verbs (Rule 1.12) only if they fit a category: names, materials, tools, processes, quoted labels, subject-field instructions. Look up each candidate first. Do not add a word the dictionary already approves.
    - Auto-glossary needs no file: code spans, paths, `file.go:12`, snake_case, camelCase, dotted names, `--flags`, URLs and short ALLCAPS acronyms are accepted and listed in the report. Check that list.
@@ -83,7 +96,7 @@ The rewrite changes the form, never the content.
 
 One permitted addition: if you kept a longer phrasing or a non-approved word on purpose, add one line after the text: `Kept as-is: <phrase> — <the precision a change would lose>`. Omit it when there is nothing to report.
 
-**On request** ("show the changes", "which rules", "compliance notes", "review this against the rules"): give a table `Rule | Original | Rewrite`, most serious first (dictionary and safety, then structure, then style). Then the mode, the glossary terms you accepted with their category, and any sentence left over the limit with the reason.
+**On request** ("show the changes", "which rules", "compliance notes", "check this against the rules"): give a table `Rule | Original | Rewrite`, most serious first (dictionary and safety, then structure, then style). Then the mode, the glossary terms you accepted with their category, and any sentence left over the limit with the reason.
 
 If the input already complies, say so. Do not force changes.
 
@@ -103,5 +116,5 @@ If the input already complies, say so. Do not force changes.
 
 - `scripts/check.go` — the checker, one Go file, standard library only.
 - `scripts/dictionary.json` — the approved-word dictionary, the source of truth. Edit it directly.
-- `scripts/glossary/software.txt` — starter glossary for software and code-review English.
+- `scripts/glossary/software.txt` — starter glossary for software English.
 - `scripts/check_test.go` — tests: `cd scripts && go test check.go check_test.go` (no go.mod needed).
